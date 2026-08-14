@@ -37,7 +37,7 @@ async function bootstrap() {
   
   // Configure CORS (single configuration)
   app.enableCors({
-    origin: true, // Allow all origins (configure specific domains in production)
+    origin: ['https://www.sabaiapp.com', 'https://sabaiapp.com'], // Restricted to known domains
     methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
     credentials: true, // Allow cookies/auth headers
