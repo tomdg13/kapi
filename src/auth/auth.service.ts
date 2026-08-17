@@ -22,11 +22,20 @@ export class AuthService {
 
   private async verifyPassword(plainPassword: string, storedHash: string): Promise<{ valid: boolean; needsUpgrade: boolean }> {
     const isMd5 = /^[a-f0-9]{32}$/i.test(storedHash);
+    const isSha256 = /^[a-f0-9]{64}$/i.test(storedHash);
+
     if (isMd5) {
       const md5Hash = crypto.createHash('md5').update(plainPassword).digest('hex');
       const valid = md5Hash === storedHash;
       return { valid, needsUpgrade: valid };
     }
+
+    if (isSha256) {
+      const sha256Hash = crypto.createHash('sha256').update(plainPassword).digest('hex');
+      const valid = sha256Hash === storedHash;
+      return { valid, needsUpgrade: valid };
+    }
+
     const valid = await bcrypt.compare(plainPassword, storedHash);
     return { valid, needsUpgrade: false };
   }

@@ -17,7 +17,6 @@ export class AuthController {
   @Public()
   @Post('login')
   async login(@Body() loginDto: { userName: string; password: string }) {
-    console.log(loginDto);
     try {
       const user = await this.authService.validateUser(
         loginDto.userName,

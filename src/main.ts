@@ -15,18 +15,18 @@ dotenv.config();
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  
+
   // Set global API prefix
   app.setGlobalPrefix('api');
-  
+
   // Enable API versioning
   app.enableVersioning({
     type: VersioningType.URI,
   });
-  
+
   // Configure body parser for larger payloads
   app.use(bodyParser.json({ limit: '30mb' }));
-  
+
   // Serve static files
   app.useStaticAssets(join(__dirname, '..', 'public'), {
     prefix: '/public',
@@ -34,21 +34,25 @@ async function bootstrap() {
   app.useStaticAssets(join(__dirname, '..', 'image'), {
     prefix: '/image/',
   });
-  
+
   // Configure CORS (single configuration)
   app.enableCors({
-    origin: ['https://www.sabaiapp.com', 'https://sabaiapp.com'], // Restricted to known domains
+    origin: [
+      'https://www.sabaiapp.com',
+      'https://sabaiapp.com',
+      /^http:\/\/localhost:\d+$/, // allow any localhost port for local dev (flutter run -d chrome)
+    ],
     methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
     credentials: true, // Allow cookies/auth headers
   });
-  
+
   // Apply global JWT authentication guard
   const reflector = app.get(Reflector);
   const jwtService = app.get(JwtService);
   const configService = app.get(ConfigService);
   app.useGlobalGuards(new JwtAuthGuard(reflector, jwtService, configService));
-  
+
   // Apply global validation pipe
   app.useGlobalPipes(
     new ValidationPipe({
@@ -57,13 +61,14 @@ async function bootstrap() {
       transform: true,
     }),
   );
-  
+
   await app.listen(3000);
   console.log('✅ Application is running on: http://localhost:3000');
-  console.log('✅ CORS enabled for all origins');
+  console.log('✅ CORS enabled for sabaiapp.com + localhost (dev)');
   console.log('✅ Global JWT authentication enabled');
 }
 
 bootstrap().catch(error => {
   console.error('❌ Error starting application:', error);
+  process.exit(1);
 });
