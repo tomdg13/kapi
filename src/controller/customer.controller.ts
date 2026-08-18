@@ -221,6 +221,14 @@ export class CustomerController {
     return await this.customerService.updateCustomerPassword(phone, password);
   }
 
+  @Put('admin/generate-reset-password/:phone')
+  async generateResetPassword(@Param('phone') phone: string) {
+    if (!phone || !/^\d+$/.test(phone)) {
+      throw new HttpException('Invalid phone number', HttpStatus.BAD_REQUEST);
+    }
+    return await this.customerService.generateResetPassword(phone);
+  }
+
 
   @Put('update-dpassword/:phone')
   async updatedPassword(

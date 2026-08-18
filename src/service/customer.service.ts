@@ -1,6 +1,7 @@
 
 import { CheckPromoteDto, CreateOtpDto, CustomerDto, CustomerpDto } from 'src/dto/customer.dto';
 import { VillageIdDto } from 'src/auth/dto/village-id.dto';
+import * as bcrypt from 'bcryptjs';
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import * as fs from 'fs/promises';
@@ -835,15 +836,14 @@ export class customerService {
 
   async updateCustomerPassword(phone: string, newPassword: string): Promise<{ status: string; message: string }> {
     try {
+      const hashedPassword = await bcrypt.hash(newPassword, 12);
       const result = await this.dataSource.query(
-        `UPDATE kd_customer SET password = '${newPassword}' WHERE phone = '${phone}'`
+        `UPDATE kd_customer SET password = ? WHERE phone = ?`,
+        [hashedPassword, phone]
       );
-
-      // Check if any row was affected (updated)
       if (result.affectedRows === 0) {
         throw new Error('Customer not found or no change');
       }
-
       return {
         status: 'success',
         message: 'Password updated successfully',
@@ -861,6 +861,38 @@ export class customerService {
     }
   }
 
+  async generateResetPassword(phone: string): Promise<{ status: string; message: string; tempPassword?: string }> {
+    try {
+      const tempPassword = Math.random().toString(36).slice(-4) +
+                            Math.random().toString(36).slice(-4);
+      const hashedPassword = await bcrypt.hash(tempPassword, 12);
+
+      const result = await this.dataSource.query(
+        `UPDATE kd_customer SET password = ? WHERE phone = ?`,
+        [hashedPassword, phone]
+      );
+
+      if (result.affectedRows === 0) {
+        throw new Error('Customer not found');
+      }
+
+      return {
+        status: 'success',
+        message: 'Temporary password generated',
+        tempPassword,
+      };
+    } catch (error) {
+      console.error('❌ Error generating reset password:', error.message);
+      throw new HttpException(
+        {
+          status: 'error',
+          message: 'Failed to generate reset password',
+          error: error.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
 
   async updateDriverPassword(phone: string, newPassword: string): Promise<{ status: string; message: string }> {
     try {

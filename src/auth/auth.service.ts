@@ -106,12 +106,12 @@ export class AuthService {
       );
     }
 
-    if (customer.status !== 'active') {
+    if (customer.status !== 'active' && customer.status !== 'reset') {
       throw new UnauthorizedException('Customer account not active');
     }
 
     const { password: _, ...customerWithoutPassword } = customer;
-    return customerWithoutPassword;
+    return { ...customerWithoutPassword, needsPasswordChange: customer.status === 'reset' };
   }
 
   async validateDriver(userName: string, password: string): Promise<any> {
@@ -194,7 +194,7 @@ export class AuthService {
   }
 
   async Clogin(user: any) {
-    const payload = { userName: user.username, language: user.language, role: user.role, sub: user.user_id, name: user.name };
+    const payload = { userName: user.username, language: user.language, role: user.role, sub: user.customer_id, name: user.name };
     const accessCToken = this.jwtService.sign(payload, { expiresIn: '10h' });
     return {
       access_token: accessCToken,
