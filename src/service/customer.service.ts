@@ -896,8 +896,10 @@ export class customerService {
 
   async updateDriverPassword(phone: string, newPassword: string): Promise<{ status: string; message: string }> {
     try {
+      const hashedPassword = await bcrypt.hash(newPassword, 12);
       const result = await this.dataSource.query(
-        `UPDATE kd_driver SET password = '${newPassword}' WHERE phone = '${phone}'`
+        `UPDATE kd_driver SET password = ? WHERE phone = ?`,
+        [hashedPassword, phone]
       );
 
       // Check if any row was affected (updated)
