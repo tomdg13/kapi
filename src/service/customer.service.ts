@@ -849,7 +849,7 @@ export class customerService {
         message: 'Password updated successfully',
       };
     } catch (error) {
-      console.error('❌ Error updating password:', error.message);
+      console.error('❌ Error updating password for phone:', phone, '-', error.message);
       throw new HttpException(
         {
           status: 'error',
@@ -912,7 +912,7 @@ export class customerService {
         message: 'Password updated successfully',
       };
     } catch (error) {
-      console.error('❌ Error updating password:', error.message);
+      console.error('❌ Error updating password for phone:', phone, '-', error.message);
       throw new HttpException(
         {
           status: 'error',
@@ -931,8 +931,10 @@ async updateioPassword(phone: string, newPassword: string): Promise<{ status: st
     
     
     // Use parameterized query to prevent SQL injection
+    const hashedPassword = await bcrypt.hash(newPassword, 12);
     const result = await this.dataSource.query(
-      `UPDATE io_user SET password = '${newPassword}',status = 'active' WHERE phone = '${phone}'`
+      `UPDATE io_user SET password = ?, status = 'active' WHERE phone = ?`,
+      [hashedPassword, phone]
     );
 
     // Check if any row was affected (updated)
@@ -945,7 +947,7 @@ async updateioPassword(phone: string, newPassword: string): Promise<{ status: st
       message: 'Password updated successfully',
     };
   } catch (error) {
-    console.error('❌ Error updating password:', error.message);
+    console.error('❌ Error updating password for phone:', phone, '-', error.message);
     throw new HttpException(
       {
         status: 'error',
