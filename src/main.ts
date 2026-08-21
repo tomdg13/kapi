@@ -41,7 +41,7 @@ async function bootstrap() {
       'https://www.sabaiapp.com',
       'https://sabaiapp.com',
       /^http:\/\/localhost:\d+$/, // allow any localhost port for local dev (flutter run -d chrome)
-      /^http:\/\/(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[01])\.)[\d.]+:\d+$/, // allow local network IPs for dev testing
+      /^http:\/\/(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[01])\.)[\d.]+(:\d+)?$/, // allow local network IPs for dev testing
     ],
     methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
