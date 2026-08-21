@@ -31,7 +31,9 @@ export class PickupService {
 
     return this.bookRepository.query(
       `
-      SELECT *, 
+      SELECT kd_book.*,
+        kd_customer.name AS passenger_name,
+        kd_customer.phone AS passenger_phone, 
         (6371 * acos(
           cos(radians(?)) * cos(radians(pickup_lat)) *
           cos(radians(pickup_lon) - radians(?)) +
@@ -39,6 +41,7 @@ export class PickupService {
         )) AS distance,
         TIMESTAMPDIFF(SECOND, request_time, NOW()) AS seconds_ago
       FROM kd_book
+      LEFT JOIN kd_customer ON kd_book.passenger_id = kd_customer.customer_id
       WHERE driver_id IS NULL 
         AND pickup_lat IS NOT NULL 
         AND pickup_lon IS NOT NULL
