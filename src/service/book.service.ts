@@ -115,6 +115,7 @@ export class BookService {
         passenger_id,
         driver_id,
         car_id,
+        requested_car_type_id,
         pickup_lat,
         pickup_lon,
         dropoff_lat,
@@ -138,12 +139,12 @@ export class BookService {
 
       const sql = `
       INSERT INTO kd_book (
-        passenger_id, driver_id, car_id,
+        passenger_id, driver_id, car_id, requested_car_type_id,
         pickup_lat, pickup_lon, dropoff_lat, dropoff_lon,
         pickup, dropoff, start_time, end_time,
         suggeste_price, payment_price, book_status, review
       ) VALUES (
-        ${escape(passenger_id)}, ${escape(driver_id)}, ${escape(car_id)},
+        ${escape(passenger_id)}, ${escape(driver_id)}, ${escape(car_id)}, ${escape(requested_car_type_id)},
         ${escape(pickup_lat)}, ${escape(pickup_lon)}, ${escape(dropoff_lat)}, ${escape(dropoff_lon)},
         ${escape(pickup)}, ${escape(dropoff)}, ${escape(start_time)}, ${escape(end_time)},
         ${escape(suggeste_price)}, ${escape(payment_price)}, ${escape(book_status)}, ${escape(review)}
