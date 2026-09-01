@@ -147,6 +147,7 @@ async findAllDriver(): Promise<any> {
   }
 }
 
+
   async findAllcartype(brand_id?: number): Promise<any> {
     try {
       let query = `SELECT * FROM kd_cartype`;
