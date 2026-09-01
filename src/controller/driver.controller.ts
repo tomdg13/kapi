@@ -1,7 +1,8 @@
 // src/controller/driver.controller.ts
-import { Controller, Put, Post, Body } from '@nestjs/common';
+import { Controller, Put, Post, Body, UseGuards, Req } from '@nestjs/common';
 import { DriverService } from '../service/driver.service';
 import { PickupService } from '../service/pickup.service';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('driver')
 export class DriverController {
@@ -16,8 +17,13 @@ export class DriverController {
   }
 
   @Post('nearby')
-  async getNearbyBookings(@Body() body: { lat: number; lon: number }) {
-    return this.pickupService.findNearbyBookings(body.lat, body.lon);
+  @UseGuards(JwtAuthGuard)
+  async getNearbyBookings(
+    @Body() body: { lat: number; lon: number },
+    @Req() req: any,
+  ) {
+    const driverUsername = req.user?.username;
+    return this.pickupService.findNearbyBookings(body.lat, body.lon, driverUsername);
   }
 
 //  @Post('parameters')
