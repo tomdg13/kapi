@@ -6,7 +6,7 @@ import {
   Get,
   HttpException,
   HttpStatus,
-  Put, Param,
+  Put, Param, Query,
 } from '@nestjs/common';
 import {  CarDto, CreateUserDto, CustomerIdDto, ProfileImageDto } from 'src/dto/user.dto';
 import { userService } from 'src/service/user.service';
@@ -65,9 +65,9 @@ export class UserController {
   }
 
     @Get('carType')
-  async findAllcartype() {
+  async findAllcartype(@Query('brand_id') brand_id?: string) {
     try {
-      return await this.userService.findAllcartype();
+      return await this.userService.findAllcartype(brand_id ? Number(brand_id) : undefined);
     } catch (error) {
       throw new HttpException(
         {
@@ -258,6 +258,21 @@ async updateUser(
 
   console.log('✅ Update result:', result);
   return result;
+}
+
+
+@Put('update-password/:phone')
+async updateUserPassword(
+  @Param('phone') phone: string,
+  @Body('password') password: string,
+) {
+  if (!phone || !/^\d+$/.test(phone)) {
+    throw new HttpException('Invalid phone number', HttpStatus.BAD_REQUEST);
+  }
+  if (!password || password.trim().length < 6) {
+    throw new HttpException('Password must be at least 6 characters', HttpStatus.BAD_REQUEST);
+  }
+  return await this.userService.updateUserPassword(phone, password);
 }
 
 

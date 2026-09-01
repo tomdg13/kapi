@@ -6,6 +6,7 @@ import { DataSource } from 'typeorm';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import * as crypto from 'crypto';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class userService {
@@ -146,10 +147,20 @@ async findAllDriver(): Promise<any> {
   }
 }
 
-  async findAllcartype(): Promise<any> {
+  async findAllcartype(brand_id?: number): Promise<any> {
     try {
-      const query = `SELECT * FROM kd_cartype order by index_price`;
-      const result = await this.dataSource.query(query);
+      let query = `SELECT * FROM kd_cartype`;
+      let params: any[] = [];
+      if (brand_id) {
+        query = `SELECT ct.* FROM kd_cartype ct
+                 INNER JOIN car_brand_type cbt ON cbt.car_type_id = ct.car_type_id
+                 WHERE cbt.brand_id = ?
+                 ORDER BY ct.index_price`;
+        params = [brand_id];
+      } else {
+        query += ` order by index_price`;
+      }
+      const result = await this.dataSource.query(query, params);
 
       return {
         status: 'success',
@@ -1090,5 +1101,31 @@ async updateParameter(dto: { name: string; value: string }): Promise<any> {
   }
 }
 
-}
 
+  async updateUserPassword(phone: string, newPassword: string): Promise<{ status: string; message: string }> {
+    try {
+      const hashedPassword = await bcrypt.hash(newPassword, 12);
+      const result = await this.dataSource.query(
+        `UPDATE kd_user SET password = ? WHERE phone = ?`,
+        [hashedPassword, phone]
+      );
+      if (result.affectedRows === 0) {
+        throw new Error('User not found or no change');
+      }
+      return {
+        status: 'success',
+        message: 'Password updated successfully',
+      };
+    } catch (error) {
+      console.error('❌ Error updating password for phone:', phone, '-', error.message);
+      throw new HttpException(
+        {
+          status: 'error',
+          message: 'Failed to update password',
+          error: error.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+}

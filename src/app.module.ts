@@ -8,6 +8,7 @@ import { JwtMiddleware } from './auth/middleware/jwt.middleware';
 import { TestModule } from './modules/test.module';
 import { UserModule } from './modules/user.module';
 import { CarModule } from './modules/car.module';
+import { CarBrandModelModule } from './modules/car-brand-model.module';
 import { BookModule } from './modules/book.module';
 import { CustomerModule } from './modules/customer.module';
 import { DriverModule } from './modules/driver.module';
@@ -47,13 +48,14 @@ import { PermissionModule } from './modules/permission.module';
       username: 'admintra',
       password: 'miN@!2025',
       database: 'KDB',
+      entities: [__dirname + '/entity/car-brand.entity{.ts,.js}', __dirname + '/entity/car-model.entity{.ts,.js}'],
     }),
     ScheduleModule.forRoot(),
     IoroleModule,
     PaymentSystemModule,PermissionModule,
     IoviewModule,SettlementDetailsModule,
     IouserModule, IoProductModule,IoInventoryModule,IoLocationModule,IobranchModule,IovendorModule,IoStoreModule,IogroupModule,IomerchantModule,IoterminalModule,IocompanyModule,
-    UserAuthModule, TestModule, UserModule,CarModule , BookModule ,CustomerModule , DriverModule,SmsModule ,BannerModule, AdvertisingModule ,TrasactionModule 
+    UserAuthModule, TestModule, UserModule,CarModule ,CarBrandModelModule , BookModule ,CustomerModule , DriverModule,SmsModule ,BannerModule, AdvertisingModule ,TrasactionModule 
     // Apply to all model --------------------------------------------------------------------------------------------------------
   ],
   controllers: [],

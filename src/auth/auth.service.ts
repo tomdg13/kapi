@@ -68,7 +68,7 @@ export class AuthService {
         case 'active':
           break; // ok
         case 'reset':
-          throw new UnauthorizedException('Reset password required');
+          break;
         case 'close':
           throw new UnauthorizedException('User is closed');
         default:
@@ -186,7 +186,7 @@ export class AuthService {
   }
 
   async login(user: any) {
-    const payload = { userName: user.username, language: user.language, role: user.role, sub: user.user_id, name: user.name };
+    const payload = { userName: user.username, language: user.language, role: user.role, sub: user.user_id, name: user.name, status: user.status };
     const accessToken = this.jwtService.sign(payload, { expiresIn: '10h' });
     return {
       access_token: accessToken,
@@ -202,7 +202,7 @@ export class AuthService {
   }
 
   async Dlogin(user: any) {
-    const payload = { userName: user.username, language: user.language, role: user.role, sub: user.user_id, name: user.name };
+    const payload = { userName: user.username, language: user.language, role: user.role, sub: user.user_id, name: user.name, status: user.status };
     const accessDToken = this.jwtService.sign(payload, { expiresIn: '10h' });
     return {
       access_token: accessDToken,
@@ -210,7 +210,7 @@ export class AuthService {
   }
 
   async IOlogin(user: any) {
-    const payload = { userName: user.username, language: user.language, role: user.role, sub: user.user_id, name: user.name };
+    const payload = { userName: user.username, language: user.language, role: user.role, sub: user.user_id, name: user.name, status: user.status };
     const accessDToken = this.jwtService.sign(payload, { expiresIn: '10h' });
     return {
       access_token: accessDToken,
