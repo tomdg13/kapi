@@ -150,23 +150,26 @@ async findAllDriver(): Promise<any> {
 
   async findAllcartype(brand_id?: number): Promise<any> {
     try {
-      let query = `SELECT * FROM kd_cartype`;
+      let query = `SELECT * FROM kd_cartype ORDER BY car_type_la ASC`;
       let params: any[] = [];
       if (brand_id) {
         query = `SELECT ct.* FROM kd_cartype ct
                  INNER JOIN car_brand_type cbt ON cbt.car_type_id = ct.car_type_id
                  WHERE cbt.brand_id = ?
-                 ORDER BY ct.index_price`;
+                 ORDER BY ct.car_type_la ASC`;
         params = [brand_id];
-      } else {
-        query += ` order by index_price`;
       }
       const result = await this.dataSource.query(query, params);
+      const imageBaseUrl = process.env.IMAGE_BASE_URL;
+      const data = result.map((ct: any) => ({
+        ...ct,
+        image: ct.image ? `${imageBaseUrl}/car-type/${ct.image}` : null,
+      }));
 
       return {
         status: 'success',
         message: 'kd_cartype fetched successfully',
-        data: result,
+        data,
       };
     } catch (error) {
       console.error('Error fetching kd_cartype:', error);
