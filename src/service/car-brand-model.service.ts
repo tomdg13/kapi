@@ -81,12 +81,12 @@ export class CarBrandModelService {
     return rows.map((r: any) => ({ ...r, image: r.image ? `${imageBaseUrl}/car-model/${r.image}` : null }));
   }
 
-  async addModel(body: { brand_id: number; model_name: string; image?: string }) {
+  async addModel(body: { brand_id: number; car_type_id?: number; model_name: string; image?: string }) {
     const imageFilename = await this.saveCarTypeImage(body.image ?? null, 'car-model');
     const imageBaseUrl = process.env.IMAGE_BASE_URL;
     await this.dataSource.query(
-      `INSERT INTO car_model (brand_id, model_name, image) VALUES (?, ?, ?)`,
-      [body.brand_id, body.model_name, imageFilename ?? null],
+      `INSERT INTO car_model (brand_id, car_type_id, model_name, image) VALUES (?, ?, ?, ?)`,
+      [body.brand_id, body.car_type_id ?? null, body.model_name, imageFilename ?? null],
     );
     const rows = await this.dataSource.query(
       `SELECT * FROM car_model WHERE brand_id = ? AND model_name = ? ORDER BY model_id DESC LIMIT 1`,
@@ -98,13 +98,14 @@ export class CarBrandModelService {
 
   async updateModel(
     id: number,
-    body: { brand_id?: number; model_name?: string; is_active?: number; image?: string },
+    body: { brand_id?: number; car_type_id?: number; model_name?: string; is_active?: number; image?: string },
   ) {
     const imageFilename = await this.saveCarTypeImage(body.image ?? null, 'car-model');
     const imageBaseUrl = process.env.IMAGE_BASE_URL;
     const updates: string[] = [];
     const params: any[] = [];
     if (body.brand_id !== undefined) { updates.push('brand_id = ?'); params.push(body.brand_id); }
+    if (body.car_type_id !== undefined) { updates.push('car_type_id = ?'); params.push(body.car_type_id); }
     if (body.model_name !== undefined) { updates.push('model_name = ?'); params.push(body.model_name); }
     if (body.is_active !== undefined) { updates.push('is_active = ?'); params.push(body.is_active); }
     if (imageFilename) { updates.push('image = ?'); params.push(imageFilename); }

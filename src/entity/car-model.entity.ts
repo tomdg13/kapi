@@ -8,6 +8,9 @@ export class CarModelEntity {
   @Column()
   brand_id: number;
 
+  @Column({ nullable: true })
+  car_type_id: number;
+
   @Column()
   model_name: string;
 
